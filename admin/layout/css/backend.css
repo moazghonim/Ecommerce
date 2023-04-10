@@ -1,0 +1,92 @@
+/* start main ruelz */
+
+body {
+    background-color: #F4F4F4;
+    font-size: 16px;
+}
+
+
+/* end main rulez */
+
+
+/*   start form login */
+
+.login {
+    width: 300px;
+    margin: 100px auto;
+}
+
+.login h4 {
+    color: #888;
+}
+
+.login input {
+    margin-bottom: 10px;
+}
+
+.login .form-control {
+    background-color: #EAEAEA;
+}
+
+.login .btn {
+    background-color: #008dde;
+}
+
+
+/* end form login */
+
+
+/* Start Bootstrap Edits */
+
+.nav>li>a,
+.navbar-brand {
+    padding: 15px 12px
+}
+
+.navbar {
+    border-radius: 0;
+    margin-bottom: 0;
+}
+
+.navbar-brand {
+    font-size: 1em;
+}
+
+
+/* End Bootstrap Edits*/
+
+
+/* start Members page */
+
+h1 {
+    font-size: 64px;
+    margin: 40px 0;
+    font-weight: bold;
+    color: #666;
+}
+
+.show-pass {
+    position: absolute;
+    right: 750px;
+}
+
+.main-table {
+    box-shadow: 0px 3px 10px #ccc;
+}
+
+.main-table td {
+    background-color: #fff;
+    vertical-align: middle;
+}
+
+.main-table tr:first-child td {
+    background-color: #333;
+    color: #fff;
+}
+
+.main-table .btn {
+    padding: 3px 10px;
+}
+
+
+/* End member page /*
