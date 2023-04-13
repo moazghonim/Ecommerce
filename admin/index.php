@@ -5,9 +5,9 @@
     $NoNavbar = "";
     $pageTitle = "Login";
 
-    if (isset($_SESSION["username"])) {
+    if (isset($_SESSION["Username"])) {
 
-        header("location: dashboard.php"); // Redirect To Dashbord Page
+        header("location:dashboard.php"); // Redirect To Dashbord Page
     }
 
     include "init.php";
@@ -43,7 +43,7 @@
 
             $_SESSION['Username'] = $username; // Register Session Name
             $_SESSION['ID'] = $row["UserID"];  // Register Session Id
-            header("location: dashboard.php"); // Redirect To Dashbord Page
+            header("location:dashboard.php"); // Redirect To Dashbord Page
             exit();
         }
     }

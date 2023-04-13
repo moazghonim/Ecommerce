@@ -17,7 +17,7 @@ if (isset($_SESSION["Username"])) {
 
     include "init.php";
 
-    $action = isset($_GET["action"]) ? $_GET["action"] :  "Manage";
+    $action = isset($_GET["action"]) ? $_GET["action"] : "Manage";
 
     // Start Manage Page
 
@@ -57,10 +57,10 @@ if (isset($_SESSION["Username"])) {
                         echo "<td>" . $row["Username"] . "</td>";
                         echo "<td>" . $row["email"]    . "</td>";
                         echo "<td>" . $row["FullName"] . "</td>";
-                        echo "<td></td>";
+                        echo "<td>" . $row["Datee"]    . "</td>";
                         echo "<td>
-                          <a href='members.php?action=Edit&&userid="   . $row['UserID'] . "' class='btn btn-success'><i class='fa fa-edit'></i>Edit</a>
-                          <a href='members.php?action=Delete&&userid=" . $row['UserID'] . "' class='btn btn-danger'><i class='fa fa-close'></i>Delete</a>
+                          <a href='members.php?action=Edit&userid="   . $row['UserID'] . "' class='btn btn-success'><i class='fa fa-edit'></i>Edit</a>
+                          <a href='members.php?action=Delete&userid=" . $row['UserID'] . "' class='btn btn-danger'><i class='fa fa-close'></i>Delete</a>
                         </td>";
                         echo "</tr>";
                     }
@@ -73,6 +73,7 @@ if (isset($_SESSION["Username"])) {
         </div>
 
     <?php  } elseif ($action == "Add") { // Add Members Page 
+
     ?>
 
         <h1 class="text-center">Add New Member</h1>
@@ -190,28 +191,47 @@ if (isset($_SESSION["Username"])) {
 
             if (empty($formErrors)) {
 
-                // Insert UserInfo In Database
 
-                $stmt = $db->prepare("INSERT INTO 
-                                          users(Username,pass,email,FullName) 
-                                      VALUES (:zuser,:zpass,:zmail,:zname)");
-                $stmt->execute([
+                // Check If User Exist In Database
 
-                    "zuser"  => $user,
-                    "zpass"  => $hashpass,
-                    "zmail"  => $email,
-                    "zname"  => $name
-                ]);
+                $check = checkitem("Username", "users", $user);
 
-                // Echo Success Message
+                if ($check == 1) {
 
-                echo "<div class = 'alert alert-success'>" . $stmt->rowCount()  . " Recourd Inserted</div>";
+                    $theMsg = "<div class= 'alert alert-danger'>Sorry This User Is Exist</div>";
+
+                    redirectHome($theMsg, "back");
+                } else {
+
+                    // Insert UserInfo In Database
+
+                    $stmt = $db->prepare("INSERT INTO 
+                                          users(Username,pass,email,FullName,datee) 
+                                      VALUES (:zuser,:zpass,:zmail,:zname,now())");
+                    $stmt->execute([
+
+                        "zuser"  => $user,
+                        "zpass"  => $hashpass,
+                        "zmail"  => $email,
+                        "zname"  => $name
+                    ]);
+
+                    // Echo Success Message
+
+                    $theMsg = "<div class = 'alert alert-success'>" . $stmt->rowCount()  . " Recourd Inserted</div>";
+
+                    redirectHome($theMsg, 'back');
+                }
             }
         } else {
 
-            $errorMsg =  " Sorry You cant browse This Page Direct";
+            echo "<div class='container'>";
 
-            redirectHome($errorMsg, 6);
+            $theMsg = "<div class= 'alert alert-danger'>Sorry You cant browse This Page Directly</div>";
+
+            redirectHome($theMsg, 'back');
+
+            echo "</div>";
         }
 
         echo "</div>";
@@ -221,7 +241,7 @@ if (isset($_SESSION["Username"])) {
 
         $userid = isset($_GET["userid"]) && is_numeric($_GET["userid"]) ?  intval($_GET["userid"]) :  0;
 
-        //  Select All Data Depend Of Id
+        //  Select All Data Depend On This Id
 
         $stmt = $db->prepare("SELECT * From users Where UserID = ? limit 1");
 
@@ -293,16 +313,23 @@ if (isset($_SESSION["Username"])) {
             // If Theres No Such Id Show Error Message
         } else {
 
-            echo "Theres No Such ID";
+
+            echo "<div class='container'>";
+
+            $theMsg = "<div class= 'alert alert-danger'>Theres No Such ID</div>";
+
+            redirectHome($theMsg);
+
+            echo "</div>";
         }
     } elseif ($action == "Update") {
 
 
+        echo "<h1 class='text-center'>Update Member</h1>";
+        echo "<div class='container'>";
+
+
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-
-
-            echo "<h1 class='text-center'>Update Member</h1>";
-            echo "<div class='container'>";
 
             // Get Varibrles From The Form
 
@@ -365,11 +392,15 @@ if (isset($_SESSION["Username"])) {
 
                 // Echo Success Message
 
-                echo "<div class = 'alert alert-success'>" . $stmt->rowCount()  . " recourd Updated</div>";
+                $theMsg = "<div class = 'alert alert-success'>" . $stmt->rowCount()  . " recourd Updated</div>";
+
+                redirectHome($theMsg, 'back');
             }
         } else {
 
-            echo " Sorry You cant browse This Page Direct";
+            $theMsg =  "<div class= 'alert alert-danger'>Sorry You cant browse This Page Direct</div>";
+
+            redirectHome($theMsg);
         }
 
         echo "</div>";
@@ -378,24 +409,15 @@ if (isset($_SESSION["Username"])) {
         echo "<h1 class='text-center'>Delete Member</h1>";
         echo "<div class='container'>";
 
+        //  Check if Get Request Id is Numerc & Get The integer Value of it
 
         $userid = isset($_GET["userid"]) && is_numeric($_GET["userid"]) ?  intval($_GET["userid"]) :  0;
 
-        //  Select All Data Depend Of Id
+        //  Select All Data Depend On This Id
 
-        $stmt = $db->prepare("SELECT * From users Where UserID = ? limit 1");
+        $check = checkitem("UserID", "users", $userid);
 
-        // Execute Query
-
-        $stmt->execute([$userid]);
-
-        // The Row Count 
-
-        $count = $stmt->rowCount();
-
-        // Theres Such Id Show The Data
-
-        if ($count > 0) {
+        if ($check > 0) {
 
             $stmt = $db->prepare("DELETE FROM users WHERE UserID = :zuser");
 
@@ -403,10 +425,14 @@ if (isset($_SESSION["Username"])) {
 
             $stmt->execute();
 
-            echo "<div class = 'alert alert-success'>" . $stmt->rowCount()  . " recourd Deleted</div>";
+            $theMsg =  "<div class = 'alert alert-success'>" . $stmt->rowCount()  . " recourd Deleted</div>";
+
+            redirectHome($theMsg);
         } else {
 
-            echo "This Id Is Not Exist";
+            $theMsg = "<div class='alert alert-danger'>This Id Is Not Exist</div>";
+
+            redirectHome($theMsg);
         }
 
         echo "</div>";

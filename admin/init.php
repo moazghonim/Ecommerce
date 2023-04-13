@@ -15,7 +15,7 @@ $css    = "layout/css/"; // Css Directory
 
 
 // icludes The Important Files
-include $func  . "functions.php";
+include $func   . "functions.php";
 include  $tpl   . "header.php";
 include $lang   . "english.php";
 
