@@ -1,6 +1,53 @@
 <?php
 
 
+
+// Get Categories Function 
+// Function To Get Categories From Database
+
+
+
+
+function getCat()
+{
+
+    global $db;
+
+    $getCat = $db->prepare("SELECT * FROM categories ORDER BY ID ASC");
+
+    $getCat->execute();
+
+    $Cats = $getCat->fetchAll();
+
+    return $Cats;
+}
+
+
+
+
+// Get Items Function 
+// Function To Get Categories From Database
+
+
+
+
+function getItems($CatID)
+{
+
+    global $db;
+
+    $getitems = $db->prepare("SELECT * FROM items WHERE Cat_ID = ? ORDER BY Item_ID DESC");
+
+    $getitems->execute([$CatID]);
+
+    $items = $getitems->fetchAll();
+
+    return $items;
+}
+
+
+
+
 // Title Function That Echo The Page Tilte 
 // Has The Variable  $pageTilte And ehco Default title For Other pages
 
@@ -115,17 +162,3 @@ function countitems($item, $table)
 
 
 
-
-function getLatest($select, $table, $order, $where = null, $limit = 5)
-{
-
-    global $db;
-
-    $getstmt = $db->prepare("SELECT $select FROM $table  ORDER BY $order DESC LIMIT $limit");
-
-    $getstmt->execute();
-
-    $rows = $getstmt->fetchAll();
-
-    return $rows;
-}

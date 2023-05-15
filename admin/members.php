@@ -4,7 +4,7 @@
 /*
 
 ===================================================
-== Mange members Page
+== Manage Mambers page
 == You Can Add | update | Delete Memebrs From Here 
 ===================================================
 */
@@ -23,9 +23,16 @@ if (isset($_SESSION["Username"])) {
 
     if ($action == "Manage") { // Manage Member page 
 
+        $query = "";
+
+        if (isset($_GET["page"]) && $_GET["page"] == "Pending") {
+
+            $query = "AND RegStatus = 0";
+        }
+
         // Select All User Except Admin
 
-        $stmt = $db->prepare("SELECT * FROM users WHERE GroupiD != 1");
+        $stmt = $db->prepare("SELECT * FROM users WHERE GroupiD != 1 $query ORDER BY UserID DESC");
 
         // Execute The Statmante
 
@@ -34,6 +41,8 @@ if (isset($_SESSION["Username"])) {
         // Assign To Variable
 
         $rows = $stmt->fetchAll();
+
+        if (!empty($rows)) {
 ?>
         <h1 class="text-center">Manage Members</h1>
         <div class="container">
@@ -53,23 +62,47 @@ if (isset($_SESSION["Username"])) {
                     foreach ($rows as $row) {
 
                         echo "<tr>";
-                        echo "<td>" . $row["UserID"]   . "</td>";
-                        echo "<td>" . $row["Username"] . "</td>";
-                        echo "<td>" . $row["email"]    . "</td>";
-                        echo "<td>" . $row["FullName"] . "</td>";
-                        echo "<td>" . $row["Datee"]    . "</td>";
-                        echo "<td>
-                          <a href='members.php?action=Edit&userid="   . $row['UserID'] . "' class='btn btn-success'><i class='fa fa-edit'></i>Edit</a>
-                          <a href='members.php?action=Delete&userid=" . $row['UserID'] . "' class='btn btn-danger'><i class='fa fa-close'></i>Delete</a>
-                        </td>";
+                            echo "<td>" . $row["UserID"]   . "</td>";
+                            echo "<td>" . $row["Username"] . "</td>";
+                            echo "<td>" . $row["email"]    . "</td>";
+                            echo "<td>" . $row["FullName"] . "</td>";
+                            echo "<td>" . $row["Datee"]    . "</td>";
+                            echo "<td>
+                                
+                                <a href='members.php?action=Edit&userid="   . $row['UserID'] . "' 
+                                class='btn btn-success'>
+                                <i class='fa fa-edit'></i> Edit </a>;
+
+                                <a href='members.php?action=Delete&userid=" . $row['UserID'] . "' 
+                                class='btn btn-danger'>
+                                <i class='fa fa-close'></i> Delete </a>";
+
+                                if ($row["RegStatus"] == 0) {
+
+                                    echo "<a href='members.php?action=Activate&userid=" . $row['UserID'] . "' 
+                                    class='btn btn-info activate'>
+                                    <i class='fa fa-check'></i> Activate </a>";
+                                }
+
+                            echo "</td>";
                         echo "</tr>";
                     }
 
                     ?>
-                    <tr>
                 </table>
             </div>
             <a href="members.php?action=Add" class="btn btn-primary"><i class="fa fa-plus"></i> New Member</a>
+             <?php  } else {
+
+              echo "<div class='container'>";
+
+                        echo "<div class='alert alert-info'>There's No Members To Show</div>";
+                        echo'<a href="members.php?action=Add" class="btn btn-primary"><i class="fa fa-plus"></i> New Member</a>';
+
+              echo "</div>";
+                    
+               
+        } ?>
         </div>
 
     <?php  } elseif ($action == "Add") { // Add Members Page 
@@ -83,7 +116,13 @@ if (isset($_SESSION["Username"])) {
                 <div class="form-group form-group-lg">
                     <label class="col-sm-2 control-label">Username</label>
                     <div class="col-sm-10 col-md-6">
-                        <input type="text" name="username" class="form-control" required="requierd" autocomplete="off" placeholder="Username To Login Into Shop" />
+                        <input 
+                            type="text" 
+                            name="username" 
+                            class="form-control" 
+                            required="requierd" 
+                            autocomplete="off" 
+                            placeholder="Username To Login Into Shop" />
                     </div>
                 </div>
                 <!-- End user name field -->
@@ -91,14 +130,25 @@ if (isset($_SESSION["Username"])) {
                 <div class="form-group form-group-lg">
                     <label class="col-sm-2 control-label">Password</label>
                     <div class="col-sm-10 col-md-6">
-                        <input type="Password" name="password" class="password form-control" required="requierd" autocomplete="new-password" placeholder="password Must Be Hard & Complex" />
+                        <input 
+                            type="Password" 
+                            name="password" 
+                            class="password form-control" 
+                            required="requierd" 
+                            autocomplete="new-password" 
+                            placeholder="password Must Be Hard & Complex" />
                     </div>
                 </div>
                 <!-- Start Password field -->
                 <div class="form-group form-group-lg">
                     <label class="col-sm-2 control-label">Email</label>
                     <div class="col-sm-10 col-md-6">
-                        <input type="Email" name="Email" class="form-control" required="requierd" placeholder="Email Must Be Valid" />
+                        <input 
+                            type="Email" 
+                            name="Email" 
+                            class="form-control" 
+                            required="requierd" 
+                            placeholder="Email Must Be Valid" />
                     </div>
                 </div>
                 <!-- End Password field -->
@@ -106,7 +156,12 @@ if (isset($_SESSION["Username"])) {
                 <div class=" form-group form-group-lg">
                     <label class="col-sm-2 control-label">Full Name</label>
                     <div class="col-sm-10 col-md-6">
-                        <input type="text" name="full" class="form-control" required="requierd" placeholder="Full Name Appear In Your Profile Page" />
+                        <input 
+                            type="text" 
+                            name="full" 
+                            class="form-control" 
+                            required="requierd" 
+                            placeholder="Full Name Appear In Your Profile Page" />
                     </div>
                 </div>
                 <!-- End Full name field -->
@@ -115,7 +170,10 @@ if (isset($_SESSION["Username"])) {
                 <div class="form-group form-group-lg">
                     <div class="col-sm-offset-2 col-sm-10">
                         <div class="col-sm-10">
-                            <input type="submit" value="Add Member" class="btn btn-primary" />
+                            <input 
+                                type="submit" 
+                                value="Add Member" 
+                                class="btn btn-primary" />
                         </div>
                     </div>
                 </div>
@@ -191,7 +249,6 @@ if (isset($_SESSION["Username"])) {
 
             if (empty($formErrors)) {
 
-
                 // Check If User Exist In Database
 
                 $check = checkitem("Username", "users", $user);
@@ -206,8 +263,10 @@ if (isset($_SESSION["Username"])) {
                     // Insert UserInfo In Database
 
                     $stmt = $db->prepare("INSERT INTO 
-                                          users(Username,pass,email,FullName,datee) 
-                                      VALUES (:zuser,:zpass,:zmail,:zname,now())");
+
+                                          users(Username,pass,email,FullName,RegStatus,datee) 
+
+                                      VALUES (:zuser,:zpass,:zmail,:zname,1,now())");
                     $stmt->execute([
 
                         "zuser"  => $user,
@@ -269,7 +328,13 @@ if (isset($_SESSION["Username"])) {
                     <div class="form-group form-group-lg">
                         <label class="col-sm-2 control-label">Username</label>
                         <div class="col-sm-10 col-md-6">
-                            <input type="text" name="username" class="form-control" value="<?php echo $row["Username"]; ?>" autocomplete="off" required="required" />
+                            <input 
+                                type="text" 
+                                name="username" 
+                                class="form-control"
+                                value="<?php echo $row["Username"]; ?>" 
+                                autocomplete="off" 
+                                required="required" />
                         </div>
                     </div>
                     <!-- End user name field -->
@@ -277,15 +342,27 @@ if (isset($_SESSION["Username"])) {
                     <div class="form-group form-group-lg">
                         <label class="col-sm-2 control-label">Password</label>
                         <div class="col-sm-10 col-md-6">
-                            <input type="hidden" name="oldpassword" value="<?php echo $row["pass"]; ?>">
-                            <input type="Password" name="newpassword" class="form-control" autocomplete="new-password" placeholder="Leave Blank If You Dont To Want Change" />
+                            <input 
+                                type="hidden" 
+                                name="oldpassword"
+                                value="<?php echo $row["pass"]; ?>">
+                            <input 
+                                type="Password" 
+                                name="newpassword" 
+                                class="form-control" 
+                                autocomplete="new-password" 
+                                placeholder="Leave Blank If You Dont To Want Change" />
                         </div>
                     </div>
                     <!-- Start Password field -->
                     <div class="form-group form-group-lg">
                         <label class="col-sm-2 control-label">Email</label>
                         <div class="col-sm-10 col-md-6">
-                            <input type="Email" name="Email" class="form-control" value="<?php echo $row["email"]; ?>" required="requierd" />
+                            <input 
+                                type="Email" 
+                                name="Email" 
+                                class="form-control" 
+                                value="<?php echo $row["email"]; ?>" required="requierd" />
                         </div>
                     </div>
                     <!-- End Password field -->
@@ -293,7 +370,12 @@ if (isset($_SESSION["Username"])) {
                     <div class=" form-group form-group-lg">
                         <label class="col-sm-2 control-label">Full Name</label>
                         <div class="col-sm-10 col-md-6">
-                            <input type="text" name="full" class="form-control" value="<?php echo $row["FullName"]; ?>" required="requierd" />
+                            <input 
+                                type="text" 
+                                name="full" 
+                                class="form-control" 
+                                value="<?php echo $row["FullName"]; ?>" 
+                                required="requierd" />
                         </div>
                     </div>
                     <!-- End Full name field -->
@@ -302,7 +384,10 @@ if (isset($_SESSION["Username"])) {
                     <div class="form-group form-group-lg">
                         <div class="col-sm-offset-2 col-sm-10">
                             <div class="col-sm-10">
-                                <input type="submit" value="Save" class="btn btn-primary" />
+                                <input 
+                                    type="submit" 
+                                    value="Save" 
+                                    class="btn btn-primary" />
                             </div>
                         </div>
                     </div>
@@ -379,22 +464,43 @@ if (isset($_SESSION["Username"])) {
                 echo "<div class = 'alert alert-danger'> . $errors . </div>";
             }
 
-
             // Check if There's Errors Proceed The Update Operation
 
             if (empty($formErrors)) {
 
-                // Update The database with This Info
 
-                $stmt = $db->prepare("UPDATE users SET Username = ?, email = ?, FullName = ?, pass = ? WHERE UserID = ?");
+                $stmt2 = $db->prepare("SELECT * 
+                                            FROM 
+                                               users 
+                                            WHERE 
+                                               Username = ? 
+                                            And 
+                                               UserID != ?");
 
-                $stmt->execute([$user, $email, $name, $pass, $id]);
+                $stmt2->execute([$user,$id]); 
 
-                // Echo Success Message
+                $count = $stmt2->rowCount();
 
-                $theMsg = "<div class = 'alert alert-success'>" . $stmt->rowCount()  . " recourd Updated</div>";
+                if ($count == 1) {
 
-                redirectHome($theMsg, 'back');
+                    $theMsg = "<div class='alert alert-danger'>Sorry This User Is Exist</div>";
+
+                    redirectHome($theMsg, 'back');
+
+                } else {
+
+                    // Update The database with This Info
+
+                        $stmt = $db->prepare("UPDATE users SET Username = ?, email = ?, FullName = ?, pass = ? WHERE UserID = ?");
+
+                        $stmt->execute([$user, $email, $name, $pass, $id]);
+
+                        // Echo Success Message
+
+                        $theMsg = "<div class = 'alert alert-success'>" . $stmt->rowCount()  . " recourd Updated</div>";
+
+                        redirectHome($theMsg, 'back');
+                }
             }
         } else {
 
@@ -419,13 +525,41 @@ if (isset($_SESSION["Username"])) {
 
         if ($check > 0) {
 
-            $stmt = $db->prepare("DELETE FROM users WHERE UserID = :zuser");
+            $stmt = $db->prepare("DELETE FROM users WHERE UserID = ?");
 
-            $stmt->bindparam("zuser", $userid);
-
-            $stmt->execute();
+            $stmt->execute([$userid]);
 
             $theMsg =  "<div class = 'alert alert-success'>" . $stmt->rowCount()  . " recourd Deleted</div>";
+
+            redirectHome($theMsg,"back");
+        } else {
+
+            $theMsg = "<div class='alert alert-danger'>This Id Is Not Exist</div>";
+
+            redirectHome($theMsg);
+        }
+
+        echo "</div>";
+    } elseif ($action == "Activate") {
+
+        echo "<h1 class='text-center'>Activate Member</h1>";
+        echo "<div class='container'>";
+
+        //  Check if Get Request Id is Numerc & Get The integer Value of it
+
+        $userid = isset($_GET["userid"]) && is_numeric($_GET["userid"]) ?  intval($_GET["userid"]) :  0;
+
+        //  Select All Data Depend On This Id
+
+        $check = checkitem("UserID", "users", $userid);
+
+        if ($check > 0) {
+
+            $stmt = $db->prepare("UPDATE users SET RegStatus = 1 WHERE UserID = ?");
+
+            $stmt->execute([$userid]);
+
+            $theMsg =  "<div class = 'alert alert-success'>" . $stmt->rowCount()  . " recourd Updated</div>";
 
             redirectHome($theMsg);
         } else {

@@ -6,7 +6,7 @@
     $pageTitle = "Login";
 
     if (isset($_SESSION["Username"])) {
-
+        
         header("location:dashboard.php"); // Redirect To Dashbord Page
     }
 
@@ -33,8 +33,11 @@
                               And 
                                     GroupiD = 1
                               limit 1");
+
         $stmt->execute([$username, $hashedpass]);
+
         $row = $stmt->fetch();
+
         $count = $stmt->rowCount();
 
         // if count > 0 This maen The Database Contain Record This About Username
@@ -42,7 +45,10 @@
         if ($count > 0) {
 
             $_SESSION['Username'] = $username; // Register Session Name
+
             $_SESSION['ID'] = $row["UserID"];  // Register Session Id
+
+            
             header("location:dashboard.php"); // Redirect To Dashbord Page
             exit();
         }

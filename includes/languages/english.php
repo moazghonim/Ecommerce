@@ -11,7 +11,7 @@ function lang($phrase)
 
         'HOME_ADMIN' => 'Home',
         'CATEGORIES' => 'Categories',
-        'ITEMS'      => 'Items',
+        'ITEMS'      => 'Itmes',
         'MEMBERS'    => 'Members',
         'COMMENTS'   => 'Comments',
         'STATISTICS' => 'Statistics',
