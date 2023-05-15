@@ -3,40 +3,47 @@
 
        
 
-       session_start();
-       $pageTitle = "Login";
+        session_start();
+        $pageTitle = "Login";
 
-       if (isset($_SESSION["user"])) {
-
-            header("location:index.php");
-       }
-
-
-       include "init.php";
-
-       if ($_SERVER["REQUEST_METHOD"] == "POST") {
-
-
-            $user = $_POST["username"];
-            $pass = $_POST["password"];
-            $hashpass = sha1($pass);
-
-
-            $stmt = $db->prepare("SELECT Username,pass FROM users WHERE Username = ? And pass = ?");
-
-            $stmt->execute([$user,$hashpass]);
-
-            $count = $stmt->rowCount();
-
-            if ($count > 0) {
-
-                $_SESSION["user"] = $user;
-                print_r($_SESSION);
+        if (isset($_SESSION["user"])) {
 
                 header("location:index.php");
-                exit();
-            }
         }
+
+
+        include "init.php";
+
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+
+                $user = $_POST["username"];
+                $pass = $_POST["password"];
+                $hashpass = sha1($pass);
+
+
+                $stmt = $db->prepare("SELECT 
+                                            Username,pass 
+                                        FROM 
+                                            users 
+                                        WHERE 
+                                            Username = ? 
+                                        And 
+                                            pass = ?");
+
+                $stmt->execute([$user,$hashpass]);
+
+                $count = $stmt->rowCount();
+
+                if ($count > 0) {
+
+                    $_SESSION["user"] = $user;
+
+                    header("location:index.php");
+                    
+                    exit();
+                }
+            }
         
     ?>
 
